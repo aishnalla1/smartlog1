@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/aishnalla1/SmartLog.git'
+                git 'https://github.com/aishnalla1/smartlog1.git'
             }
         }
 
