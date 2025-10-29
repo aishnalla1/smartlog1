@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = "smartlog"
         CONTAINER_NAME = "smartlog_test"
-        PORT = "5001"
+        PORT = "5002"
     }
 
     stages {
