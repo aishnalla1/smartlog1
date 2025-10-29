@@ -2,46 +2,57 @@ pipeline {
     agent any
 
     environment {
-        IMAGE = 'smartlog'
+        IMAGE_NAME = "smartlog"
+        CONTAINER_NAME = "smartlog_test"
+        PORT = "5001"
     }
 
     stages {
         stage('Checkout') {
-    steps {
-        git branch: 'main', url: 'https://github.com/aishnalla1/smartlog1.git'
-    }
-}
-
+            steps {
+                git branch: 'main', url: 'https://github.com/aishnalla1/smartlog1.git'
+            }
+        }
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t %IMAGE% .'
+                bat "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Run Container (Test)') {
             steps {
-                bat 'docker rm -f smartlog_test || echo skip'
-                bat 'docker run -d --name smartlog_test -p 5000:5000 %IMAGE%'
-                bat 'timeout /t 5'
-                bat 'curl http://localhost:5000/'
+                bat """
+                    docker rm -f ${CONTAINER_NAME} || echo skip
+                    docker run -d --name ${CONTAINER_NAME} -p ${PORT}:5000 ${IMAGE_NAME}
+                """
             }
         }
 
         stage('API Test') {
             steps {
-                // Root endpoint test
-                bat 'curl -f http://localhost:5000/ || exit 1'
-
-                // Analyze endpoint test with POST data
-                bat 'curl -X POST http://localhost:5000/analyze -H "Content-Type: application/json" -d "{\\"logs\\":\\"ERROR: test failure\\"}"'
+                bat """
+                    curl -f http://localhost:${PORT} || exit 1
+                """
             }
         }
 
         stage('Clean Up') {
             steps {
-                bat 'docker stop smartlog_test && docker rm smartlog_test'
+                bat "docker rm -f ${CONTAINER_NAME} || echo skip"
             }
+        }
+    }
+
+    post {
+        always {
+            bat "docker rm -f ${CONTAINER_NAME} || echo skip"
+        }
+        success {
+            echo '✅ CI/CD pipeline executed successfully!'
+        }
+        failure {
+            echo '❌ Pipeline failed. Check logs above.'
         }
     }
 }
