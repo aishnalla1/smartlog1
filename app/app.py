@@ -4,7 +4,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def home():
-    return "SmartLog AI Log Analyzer is running!"
+    return "SmartLog AI Log  updated  is running!"
 
 @app.route('/analyze', methods=['POST'])
 def analyze_logs():
