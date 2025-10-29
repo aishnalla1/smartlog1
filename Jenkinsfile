@@ -7,10 +7,11 @@ pipeline {
 
     stages {
         stage('Checkout') {
-            steps {
-                git 'https://github.com/aishnalla1/smartlog1.git'
-            }
-        }
+    steps {
+        git branch: 'main', url: 'https://github.com/aishnalla1/smartlog1.git'
+    }
+}
+
 
         stage('Build Docker Image') {
             steps {
